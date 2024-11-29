@@ -22,9 +22,14 @@ export class AuthService {
   // Register new user 
   async register(email: string, pass: string) {
     const hashedPassword = bcrypt.hashSync(pass, 10);
-    return await this.prisma.user.create({
+   const user = await this.prisma.user.create({
       data: { email, password: hashedPassword },
     });
+    return {
+      message: 'User registered successfully',
+      brandRepId: user.id,
+      user: { ...user },   
+    }
   }
 
   // Generate JWT token
@@ -32,6 +37,7 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email };
     return {
       access_token: this.jwtService.sign(payload),
+      brandRepId: user.id
     };
   }
 }
