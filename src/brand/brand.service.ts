@@ -6,23 +6,45 @@ export class BrandService {
   constructor(private prisma: PrismaService) {}
 
   // Create or update a brand profile
-  async createOrUpdateBrand(data: { name: string; logo: string }) {
-    // Use findFirst if name is not unique
+  async setupBrand(
+    brandRepId: string, 
+    data: { brandName: string; description: string; otherDetails?: string }
+  ) {
     const existingBrand = await this.prisma.brand.findFirst({
-      where: { name: data.name },
+      where: { brandRepId },
     });
 
     if (existingBrand) {
       // Update the existing brand profile
-      return await this.prisma.brand.update({
-        where: { id: existingBrand.id }, // Use existing brand's ID for update
-        data,
+      await this.prisma.brand.update({
+        where: { id: existingBrand.id },
+        data: {
+          brandName: data.brandName,
+          description: data.description,
+          otherDetails: data.otherDetails,
+        },
       });
+
+      return {
+        brandId: existingBrand.id, 
+        status: 'updated', 
+      };
     } else {
-      // Create a new brand profile
-      return await this.prisma.brand.create({
-        data,
+      // Create a new brand profile if none exists
+      const newBrand = await this.prisma.brand.create({
+        data: {
+          brandRepId, 
+          brandName: data.brandName,
+          description: data.description,
+          otherDetails: data.otherDetails,
+        },
       });
+
+      return {
+        brandId: newBrand.id, 
+        status: 'created', 
+      };
     }
   }
 }
+

@@ -1,13 +1,20 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { BrandService } from './brand.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('brand')
+@Controller('api/brand')
 export class BrandController {
   constructor(private brandService: BrandService) {}
 
-  // Set up brand profile (create or update)
+  @UseGuards(JwtAuthGuard) 
   @Post('setup')
-  async createOrUpdateBrand(@Body() body: { name: string; logo: string }) {
-    return await this.brandService.createOrUpdateBrand(body);
+  async setupBrand(
+    @Request() req, 
+    @Body() body: { brandName: string; description: string; otherDetails?: string },
+  ) {
+    const brandRepId = req.user.sub; 
+    const result = await this.brandService.setupBrand(brandRepId, body);
+    
+    return result;
   }
 }
