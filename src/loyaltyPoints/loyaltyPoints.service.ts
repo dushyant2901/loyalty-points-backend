@@ -96,7 +96,11 @@ async distributePoints(
     recipientAddress: string,
     amount: number,
   ) {
+<<<<<<< HEAD
 
+=======
+    // Fetch loyalty point record
+>>>>>>> 56ff01340c473bfbb0367dd7b8dfe803c670a6bc
     const loyaltyPoint = await this.prisma.loyaltyPoints.findFirst({
       where: {
         loyaltyPointId,
@@ -108,12 +112,20 @@ async distributePoints(
       throw new BadRequestException('Invalid loyaltyPointId or brandRepId');
     }
 
+<<<<<<< HEAD
     
+=======
+    // Check if enough points are available
+>>>>>>> 56ff01340c473bfbb0367dd7b8dfe803c670a6bc
     if (loyaltyPoint.totalSupply < amount) {
       throw new BadRequestException('Insufficient points available');
     }
 
+<<<<<<< HEAD
   
+=======
+    // Create a distribution record
+>>>>>>> 56ff01340c473bfbb0367dd7b8dfe803c670a6bc
     const distribution = await this.prisma.loyaltyPointsDistribution.create({
       data: {
         loyaltyPointId,
@@ -122,7 +134,11 @@ async distributePoints(
       },
     });
 
+<<<<<<< HEAD
     
+=======
+    // Deduct points from totalSupply
+>>>>>>> 56ff01340c473bfbb0367dd7b8dfe803c670a6bc
     await this.prisma.loyaltyPoints.update({
       where: { loyaltyPointId },
       data: {
@@ -130,7 +146,11 @@ async distributePoints(
       },
     });
 
+<<<<<<< HEAD
  
+=======
+    // Return distributionId and status
+>>>>>>> 56ff01340c473bfbb0367dd7b8dfe803c670a6bc
     return {
       distributionId: distribution.id,
       status: 'success',
