@@ -22,22 +22,30 @@ export class AuthService {
   // Register new user 
   async register(email: string, pass: string) {
     const hashedPassword = bcrypt.hashSync(pass, 10);
-   const user = await this.prisma.user.create({
+    
+    // Create a new user
+    const user = await this.prisma.user.create({
       data: { email, password: hashedPassword },
     });
+
+    // Generate JWT token after user registration
+    const accessToken = this.jwtService.sign({ sub: user.id, email: user.email });
+
+   
     return {
-      message: 'User registered successfully',
-      brandRepId: user.id,
-      user: { ...user },   
-    }
+      brandRepId: user.id,  
+      access_token: accessToken, 
+    };
   }
 
-  // Generate JWT token
-  async generateJwt(user: { id: number; email: string }) {
+  // Generate JWT token for authenticated user
+  async generateJwt(user: { id: string; email: string }) {
     const payload = { sub: user.id, email: user.email };
+
+
     return {
       access_token: this.jwtService.sign(payload),
-      brandRepId: user.id
+      brandRepId: user.id,  
     };
   }
 }

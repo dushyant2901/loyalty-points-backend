@@ -8,7 +8,12 @@ export class AuthController {
   // Register user
   @Post('register')
   async register(@Body() body: { email: string; password: string }) {
-    return await this.authService.register(body.email, body.password);
+    const registrationResponse = await this.authService.register(body.email, body.password);
+    return {
+     
+      brandRepId: registrationResponse.brandRepId,
+      access_token: registrationResponse.access_token,  
+    };
   }
 
   // Login user and generate JWT token
@@ -18,6 +23,12 @@ export class AuthController {
     if (!user) {
       throw new Error('Invalid credentials');
     }
-    return this.authService.generateJwt(user);
+
+    const jwtResponse = await this.authService.generateJwt(user);
+    return {
+      brandRepId: jwtResponse.brandRepId,
+      access_token: jwtResponse.access_token, 
+    };
   }
 }
+
