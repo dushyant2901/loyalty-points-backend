@@ -6,15 +6,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class BrandController {
   constructor(private brandService: BrandService) {}
 
-  @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   @Post('setup')
   async setupBrand(
-    @Request() req, 
+    @Request() req,
     @Body() body: { brandName: string; description: string; otherDetails?: string },
   ) {
-    const brandRepId = req.user.sub; 
-    const result = await this.brandService.setupBrand(brandRepId, body);
-    
-    return result;
+    const userId = req.user.userId; 
+    return this.brandService.setupBrand(userId, body);
   }
 }

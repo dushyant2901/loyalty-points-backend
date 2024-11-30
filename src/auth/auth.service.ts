@@ -10,7 +10,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // Validate user by email and password
+
   async validateUser(email: string, pass: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (user && bcrypt.compareSync(pass, user.password)) {
@@ -19,16 +19,16 @@ export class AuthService {
     return null;
   }
 
-  // Register new user 
+  
   async register(email: string, pass: string) {
     const hashedPassword = bcrypt.hashSync(pass, 10);
     
-    // Create a new user
+  
     const user = await this.prisma.user.create({
       data: { email, password: hashedPassword },
     });
 
-    // Generate JWT token after user registration
+
     const accessToken = this.jwtService.sign({ sub: user.id, email: user.email });
 
    
@@ -38,7 +38,7 @@ export class AuthService {
     };
   }
 
-  // Generate JWT token for authenticated user
+  
   async generateJwt(user: { id: string; email: string }) {
     const payload = { sub: user.id, email: user.email };
 

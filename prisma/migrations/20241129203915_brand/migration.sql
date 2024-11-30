@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Brand" ALTER COLUMN "brandName" DROP DEFAULT,
-ALTER COLUMN "brandRepId" DROP DEFAULT,
-ALTER COLUMN "description" DROP DEFAULT;
