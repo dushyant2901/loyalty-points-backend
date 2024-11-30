@@ -81,4 +81,13 @@ export class LoyaltyPointsService {
       throw new Error('Failed to issue loyalty points');
     }
   }
+
+async getLoyaltyPointsByRepId(brandRepId: string) {
+    return this.prisma.loyaltyPoints.findMany({
+      where: {
+        brandRepId, 
+      },
+    });
+  }
+
 }

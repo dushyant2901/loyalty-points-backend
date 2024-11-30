@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Param ,Get} from '@nestjs/common';
 import { LoyaltyPointsService } from './loyaltyPoints.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -23,4 +23,11 @@ export class LoyaltyPointsController {
   ) {
     return this.loyaltyPointsService.issueLoyaltyPoints(body);
   }
+
+
+ @Get('manage')
+  async getLoyaltyPoints(@Request() req) {
+    const brandRepId = req.user.userId; 
+    return this.loyaltyPointsService.getLoyaltyPointsByRepId(brandRepId);
+  } 
 }
