@@ -7,8 +7,6 @@ export class AppController {
 
   @Get()
   getWelcomeMessage() {
-    return {
-      message: 'Welcome to the Loyalty Points Issuence NestJS API!',
-    };
+  return { message: this.appService.getWelcomeMessage() };
   }
 }

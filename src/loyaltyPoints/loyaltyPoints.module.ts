@@ -13,5 +13,6 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   controllers: [LoyaltyPointsController],
   providers: [LoyaltyPointsService, PrismaService],
+   exports: [LoyaltyPointsService], 
 })
 export class LoyaltyPointsModule {}

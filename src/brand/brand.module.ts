@@ -7,5 +7,6 @@ import { PrismaService } from '../prisma.service';
   imports: [],
   controllers: [BrandController],
   providers: [BrandService, PrismaService],
+   exports: [BrandService], 
 })
 export class BrandModule {}
