@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -88,6 +88,53 @@ async getLoyaltyPointsByRepId(brandRepId: string) {
         brandRepId, 
       },
     });
+  }
+
+async distributePoints(
+    brandRepId: string,
+    loyaltyPointId: number,
+    recipientAddress: string,
+    amount: number,
+  ) {
+    // Fetch loyalty point record
+    const loyaltyPoint = await this.prisma.loyaltyPoints.findFirst({
+      where: {
+        loyaltyPointId,
+        brandRepId,
+      },
+    });
+
+    if (!loyaltyPoint) {
+      throw new BadRequestException('Invalid loyaltyPointId or brandRepId');
+    }
+
+    // Check if enough points are available
+    if (loyaltyPoint.totalSupply < amount) {
+      throw new BadRequestException('Insufficient points available');
+    }
+
+    // Create a distribution record
+    const distribution = await this.prisma.loyaltyPointsDistribution.create({
+      data: {
+        loyaltyPointId,
+        recipientAddress,
+        amount,
+      },
+    });
+
+    // Deduct points from totalSupply
+    await this.prisma.loyaltyPoints.update({
+      where: { loyaltyPointId },
+      data: {
+        totalSupply: loyaltyPoint.totalSupply - amount,
+      },
+    });
+
+    // Return distributionId and status
+    return {
+      distributionId: distribution.id,
+      status: 'success',
+    };
   }
 
 }
