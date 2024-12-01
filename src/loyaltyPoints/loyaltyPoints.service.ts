@@ -81,4 +81,57 @@ export class LoyaltyPointsService {
       throw new Error('Failed to issue loyalty points');
     }
   }
+async getLoyaltyPointsByRepId(brandRepId: string) {
+    return this.prisma.loyaltyPoints.findMany({
+      where: {
+        brandRepId, 
+      },
+    });
+  }
+  async distributePoints(
+    brandRepId: string,
+    loyaltyPointId: number,
+    recipientAddress: string,
+    amount: number,
+  ) {
+
+    const loyaltyPoint = await this.prisma.loyaltyPoints.findFirst({
+      where: {
+        loyaltyPointId,
+        brandRepId,
+      },
+    });
+
+    if (!loyaltyPoint) {
+      throw new BadRequestException('Invalid loyaltyPointId or brandRepId');
+    }
+
+    
+    if (loyaltyPoint.totalSupply < amount) {
+      throw new BadRequestException('Insufficient points available');
+    }
+
+  
+    const distribution = await this.prisma.loyaltyPointsDistribution.create({
+      data: {
+        loyaltyPointId,
+        recipientAddress,
+        amount,
+      },
+    });
+
+    
+    await this.prisma.loyaltyPoints.update({
+      where: { loyaltyPointId },
+      data: {
+        totalSupply: loyaltyPoint.totalSupply - amount,
+      },
+    });
+
+ 
+    return {
+      distributionId: distribution.id,
+      status: 'success',
+    };
+  }
 }
