@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Param ,Get,BadRequestException} from '@nestjs/common';
 import { LoyaltyPointsService } from './loyaltyPoints.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -23,4 +23,36 @@ export class LoyaltyPointsController {
   ) {
     return this.loyaltyPointsService.issueLoyaltyPoints(body);
   }
+
+
+ @Get('manage')
+ async getLoyaltyPoints(@Request() req) {
+    const brandRepId = req.user.userId; 
+    return this.loyaltyPointsService.getLoyaltyPointsByRepId(brandRepId);
+  } 
+
+ @Post('distribute')
+ async distributePoints(
+    @Body()
+    body: {
+      brandRepId: string;
+      loyaltyPointId: number;
+      recipientAddress: string;
+      amount: number;
+    },
+  ) {
+    const { brandRepId, loyaltyPointId, recipientAddress, amount } = body;
+
+    if (!brandRepId || !loyaltyPointId || !recipientAddress || !amount) {
+      throw new BadRequestException('All fields are required');
+    }
+
+    return this.loyaltyPointsService.distributePoints(
+      brandRepId,
+      loyaltyPointId,
+      recipientAddress,
+      amount,
+    );
+  }
+
 }
